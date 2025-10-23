@@ -1,0 +1,618 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EWB Challenge - SaiBai Island</title>
+  <meta name="description" content="Single-page site with tab routing. Warm amber theme. Core prototypes enhanced." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="badge">EWB Challenge - Saibai Island (Design Area 6.1)</p>
+      <h1>Information, Communication and Technology (ICT)</h1>
+      <p class="small">Early warning system, developed for Saibai island community.</p>
+    </header>
+  </div>
+
+  <nav class="tabs">
+    <div class="inner">
+      <a href="?page=home" data-page="home">Home</a>
+      <a href="?page=group" data-page="group">Group Information</a>
+      <a href="?page=summary" data-page="summary">Summary</a>
+      <a href="?page=problem" data-page="problem">Problem</a>
+      <a href="?page=principles" data-page="principles">Principles</a>
+      <a href="?page=solution" data-page="solution">Solution</a>
+      <a href="?page=journeys" data-page="journeys">Journeys</a>
+      <a href="?page=community" data-page="community">Community</a>
+      <a href="?page=concerns" data-page="concerns">Concerns</a>
+      <a href="?page=plan" data-page="plan">Plan</a>
+      <a href="?page=recommendations" data-page="recommendations">Recommendations</a>
+      <a href="?page=references" data-page="references">References</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <main>
+      <section id="home">
+        <div id="homeBody"></div>
+      </section>
+      <section id="group">
+        <div id="groupBody"></div>
+      </section>
+      <section id="summary">
+        <div id="summaryBody"></div>
+      </section>
+      <section id="problem">
+        <div id="problemBody"></div>
+      </section>
+      <section id="principles">
+        <div id="principlesBody"></div>
+      </section>
+      <section id="solution">
+        <div id="solutionBody"></div>
+      </section>
+      <section id="journeys">
+        <div id="journeysBody"></div>
+      </section>
+      <section id="community">
+        <div id="communityBody"></div>
+      </section>
+      <section id="concerns">
+        <div id="concernsBody"></div>
+      </section>
+      <section id="plan">
+        <div id="planBody"></div>
+      </section>
+      <section id="recommendations">
+        <div id="recsBody"></div>
+      </section>
+      <section id="references">
+        <div id="referencesBody"></div>
+      </section>
+    </main>
+    <footer>
+      <p class="small">The Cyber Forge - Group 1 2025 <a href="?page=home" data-page="home">Back to Home</a></p>
+    </footer>
+  </div>
+
+  <script src="content.js"></script>
+  <script>
+    (function () {
+      const C = window.EWS_CONTENT || {};
+      const H = (t) => `<h2>${t}</h2>`;
+      const P = (arr) => (arr?.map((p) => `<p>${p}</p>`).join("")) || "";
+      const L = (items) => (items?.map((i) => `<li>${i}</li>`).join("")) || "";
+      const IMG = (o) => {
+        if (!o || !o.src) return "";
+        const credit = o.citationAPA || o.creditAPA || o.credit || "";
+        const capParts = [];
+        if (o.caption) capParts.push(o.caption);
+        if (credit) capParts.push(`APA: ${credit}`);
+        const cap = capParts.length ? `<figcaption class="small">${capParts.join("<br/>")}</figcaption>` : "";
+        return `<figure><img src="${o.src}" alt="${o.alt || ""}">${cap}</figure>`;
+      };
+
+      // Home
+      function renderHome() {
+        const d = C.home || {};
+        return `${H(d.title || "Overview")}
+        <div class="grid cols-2">
+          <div>${P(d.paragraphs) || ""}<ul>${L(d.bullets || [])}</ul></div>
+          <div>${IMG(d.image) || ""}</div>
+        </div>`;
+      }
+
+      // Group
+      function renderGroup() {
+        const g = C.group || {};
+        const people = (g.members || [])
+          .map(
+            (m) =>
+              `<div class="card"><strong>${m.name}</strong><br/><span class="small">${m.role}</span></div>`
+          )
+          .join("");
+        const goals = (g.goals || []).map((x) => `<span class="badge2">${x}</span>`).join(" ");
+        return `${H(g.title || "Group Information")}
+        <div>
+          <div>
+            <div>
+              <h3>Acknowledgement of Country</h3>
+              <p>${g.ack || ""}</p>
+            </div>
+            <h3>Team Member</h3>
+            <div class="grid cols-2">${people}</div>
+            <p>${goals}</p>
+          </div>
+        </div>`;
+      }
+
+      // Summary
+      function renderSummary() {
+        const d = C.summary || {};
+
+        const parts = (d.paragraphs || []).map((s) => {
+          const i = s.indexOf(":");
+          return i > -1
+            ? { label: s.slice(0, i).trim(), body: s.slice(i + 1).trim() }
+            : { label: "", body: s };
+        });
+
+        const lead = parts[0]?.body || "";
+        const kpis = ["~1.7 m elevation", "~340 residents", "Multi-hazard coverage", "48h+ off-grid operation"]
+          .map((k) => `<span class="badge2">${k}</span>`)
+          .join(" ");
+
+        const cards = parts
+          .slice(1)
+          .map(
+            ({ label, body }) => `
+            <div class="card">
+              ${label ? `<h3>${label}</h3>` : ""}
+              <p>${body}</p>
+            </div>`
+          )
+          .join("");
+
+        let outcomeCard = "";
+        if (d.outcome) {
+          const oi = d.outcome.indexOf(":");
+          const oLabel = oi > -1 ? d.outcome.slice(0, oi).trim() : "Outcome";
+          const oBody = oi > -1 ? d.outcome.slice(oi + 1).trim() : d.outcome;
+          const items = oBody
+            .split(";")
+            .map((t) => t.trim())
+            .filter(Boolean)
+            .map((t) => `<li>${t.replace(/\.$/, "")}</li>`)
+            .join("");
+          outcomeCard = `
+          <div class="card">
+            <h3>${oLabel}</h3>
+            <ul class="checks">${items}</ul>
+          </div>`;
+        }
+
+        const how = `
+        <div class="card" style="grid-column: 1/-1;">
+          <h3>How it works</h3>
+          <div class="grid cols-3">
+            <a class="chip" href="?page=solution" data-page="solution">Sensing</a>
+            <a class="chip" href="?page=solution" data-page="solution">Intelligence</a>
+            <a class="chip" href="?page=solution" data-page="solution">Notification</a>
+          </div>
+          <p class="small" style="margin-top:8px">Explore the three core layers in the Solution tab.</p>
+        </div>`;
+
+        return `
+        ${H("Executive Summary")}
+        <p class="lead">${lead}</p>
+        <p class="kpis">${kpis}</p>
+        <div class="grid cols-2">
+          ${cards}
+          ${outcomeCard}
+          ${how}
+        </div>`;
+      }
+
+      // Problem
+      function renderProblem() {
+        const d = C.problem || {};
+        const hazards = (d.hazards || []).map((h) => `<li>${h}</li>`).join("");
+        const gaps = (d.gaps || []).map((g) => `<li>${g}</li>`).join("");
+
+        const intro = `
+        <p class="lead">
+          Saibai Island faces overlapping natural and communication hazards. The challenge is not only predicting
+          events, but ensuring every resident receives clear, trusted warnings?봢ven during blackouts or outages.
+        </p>`;
+
+        const toArr = (img) => (Array.isArray(img) ? img : img ? [img] : []);
+
+        const makeAutoCarousel = (imgs, id) => {
+          if (!imgs.length) return "";
+          if (imgs.length === 1) {
+            const o = imgs[0];
+            return IMG(o);
+          }
+          const slides = imgs
+            .map(
+              (o, i) => `
+            <div class="auto-slide${i === 0 ? " active" : ""}">
+              <img src="${o.src}" alt="${o.alt || ""}">
+              ${(() => { const credit = o.citationAPA || o.creditAPA || o.credit || ""; const txt = [o.caption, credit ? `APA: ${credit}` : ""].filter(Boolean).join("<br/>"); return txt ? `<div class=\"cap small\">${txt}</div>` : ""; })()}
+            </div>`
+            )
+            .join("");
+          return `<div class="auto-carousel" id="${id}">${slides}</div>`;
+        };
+
+        return `
+        ${H("Problem & Background")}
+        ${intro}
+        <div class="problem-stack">
+          <div class="card problem-block">
+            <div class="content">
+              <div>
+                <h3>Hazards</h3>
+                <ul>${hazards}</ul>
+              </div>
+              ${makeAutoCarousel(toArr(d.hazardsImage), "hazardsAuto")}
+            </div>
+          </div>
+          <div class="card problem-block">
+            <div class="content">
+              <div>
+                <h3>System Gaps</h3>
+                <ul>${gaps}</ul>
+              </div>
+              ${makeAutoCarousel(toArr(d.gapsImage), "gapsAuto")}
+            </div>
+          </div>
+        </div>`;
+      }
+
+      // Principles
+      function renderPrinciples() {
+        const arr = C.principles || [];
+        const tiles = arr
+          .map((s, i) => {
+            let title = s;
+            let body = "";
+            const idx = s.indexOf(":");
+            if (idx > 0) {
+              title = s.slice(0, idx).trim();
+              body = s.slice(idx + 1).trim();
+            }
+            return `
+            <div class="p-tile" tabindex="0">
+              <div class="p-num">${String(i + 1).padStart(2, "0")}</div>
+              <div class="p-body">
+                <h3>${title}</h3>
+                ${body ? `<p>${body}</p>` : ""}
+              </div>
+            </div>`;
+          })
+          .join("");
+
+        return `
+        ${H("Design Principles")}
+        <p class="small">People-centred · Multi-hazard · Resilient-by-design</p>
+        <div class="principles-grid">
+          ${tiles}
+        </div>`;
+      }
+
+      // Solution
+      function renderSolution() {
+        const s = C.solution || {};
+        const layers = s.layers || [];
+        const protos = s.prototypes || [];
+        const costs = s.costs || [];
+
+        const toArr = (img) => (Array.isArray(img) ? img : img ? [img] : []);
+        const makeAutoCarousel = (imgs) => {
+          if (!imgs || !imgs.length) return "";
+          if (imgs.length === 1) {
+            const o = imgs[0];
+            return IMG(o);
+          }
+          const slides = imgs
+            .map(
+              (o, i) => `
+            <div class="auto-slide${i === 0 ? " active" : ""}">
+              <img src="${o.src}" alt="${o.alt || ""}">
+              ${(() => { const credit = o.citationAPA || o.creditAPA || o.credit || ""; const txt = [o.caption, credit ? `APA: ${credit}` : ""].filter(Boolean).join("<br/>"); return txt ? `<div class=\"cap small\">${txt}</div>` : ""; })()}
+            </div>`
+            )
+            .join("");
+          return `<div class="auto-carousel">${slides}</div>`;
+        };
+
+        const glance = ["3 core layers", "Human-in-the-loop", "Bilingual & accessible", "48h+ off-grid", "Multi-hazard alignment"]
+          .map((t) => `<span class="badge2">${t}</span>`)
+          .join(" ");
+
+        const layerBlocks = layers
+          .map(
+            (l) => `
+          <div class="card sol-block">
+            <div class="content">
+              <div>
+                <h3>${l.title}</h3>
+                <ul>${L(l.bullets || [])}</ul>
+              </div>
+              ${IMG(l.image) || ""}
+            </div>
+          </div>`
+          )
+          .join("");
+
+        const protoCards = protos
+          .map((p) => {
+            const imgs = toArr(p.image);
+            const media = imgs.length ? makeAutoCarousel(imgs) : "";
+            const impact = p.impact ? `<div class="impact">${p.impact}</div>` : "";
+            return `
+            <div class="card proto-card">
+              <div class="head">
+                <h3>${p.name}</h3>
+                ${impact}
+              </div>
+              <div class="body">
+                <div class="media">${media}</div>
+                <ul>${L(p.details || [])}</ul>
+              </div>
+            </div>`;
+          })
+          .join("");
+
+        const costCards = costs
+          .map((c) => {
+            const maint = c.maintenance ? `<ul class="tight">${L(c.maintenance)}</ul>` : "";
+            const lines = [
+              c.example ? `<div class="kv"><span>Example</span><span>${c.example}</span></div>` : "",
+              c.basePrice ? `<div class="kv"><span>Base Price</span><span>${c.basePrice}</span></div>` : "",
+              c.operatingCost ? `<div class="kv"><span>Operating Cost</span><span>${c.operatingCost}</span></div>` : "",
+              c.install ? `<div class="kv"><span>Install</span><span>${c.install}</span></div>` : "",
+              c.shipping ? `<div class="kv"><span>Freight/Shipping</span><span>${c.shipping}</span></div>` : "",
+              maint ? `<div class="kv"><span>Maintenance</span><span>${maint}</span></div>` : "",
+              c.lifespan ? `<div class="kv"><span>Expected Lifespan</span><span>${c.lifespan}</span></div>` : ""
+            ].join("");
+            const est = c.estimate ? `<div class="est">${c.estimate}</div>` : "";
+            return `
+            <div class="card cost-card">
+              <h4>${c.name}</h4>
+              ${lines}
+              ${est}
+            </div>`;
+          })
+          .join("");
+
+        return `
+        ${H("Solution")}
+        <p class="small">People-centred, rule-based decision flow with offline resilience and bilingual delivery.</p>
+        <p class="kpis">${glance}</p>
+
+        <h3 class="sol-sub">Core Layers</h3>
+        <div class="sol-stack">
+          ${layerBlocks}
+        </div>
+
+        <h3 class="sol-sub" style="margin-top:18px">Three Main Prototypes</h3>
+        <div class="proto-grid">
+          ${protoCards}
+        </div>
+
+        ${costCards
+            ? `
+          <h3 class="sol-sub" style="margin-top:18px">Costs (Estimation)</h3>
+          <div class="cost-grid">
+            ${costCards}
+          </div>`
+            : ""
+          }`;
+      }
+
+      // Journeys
+      function renderJourneys() {
+        const j = C.journeys || [];
+        const out = j
+          .map(
+            (x) =>
+              `<div class="card"><h3>${x.title}</h3><ol>${(x.steps || []).map((s) => `<li>${s}</li>`).join("")}</ol>${IMG(x.image) || ""}</div>`
+          )
+          .join("");
+        return `${H("User Journeys")}${out}`;
+      }
+
+      // Community
+      function renderCommunity() {
+        const d = C.community || {};
+        const items = [
+          { title: "Safety & Trust", text: d.safetyTrust, image: d.safetyTrustImage },
+          { title: "Inclusion", text: d.inclusion, image: d.inclusionImage },
+          { title: "Jobs & Ownership", text: d.jobs, image: d.jobsImage }
+        ].filter((x) => x.text || x.image);
+
+        const toArr = (img) => (Array.isArray(img) ? img : img ? [img] : []);
+        const gallery = toArr(d.image || d.images);
+
+        // Case 1: Per-category images provided
+        if (items.some((x) => x.image)) {
+          const cards = items
+            .map((it) => `
+            <div class="card">
+              <h3>${it.title}</h3>
+              ${it.text ? `<p>${it.text}</p>` : ""}
+              ${IMG(it.image) || ""}
+            </div>`)
+            .join("");
+          return `${H("Community Benefits")}<div class="grid cols-3">${cards}</div>`;
+        }
+
+        // Case 2: A gallery image(s) present for the section
+        if (gallery.length) {
+          const media = gallery.map((o) => IMG(o)).join("");
+          const list = `<ul>${L([d.safetyTrust, d.inclusion, d.jobs].filter(Boolean))}</ul>`;
+          return `${H("Community Benefits")}<div class="grid cols-2"><div>${list}</div><div>${media}</div></div>`;
+        }
+
+        // Fallback: text-only list
+        return `${H("Community Benefits")}<ul>${L([d.safetyTrust, d.inclusion, d.jobs].filter(Boolean))}</ul>`;
+      }
+
+      // Concerns
+      function renderConcerns() {
+        const arr = C.concerns || [];
+        return (
+          `${H("Common Concerns & Answers")}` +
+          arr.map((c) => `<div class="card"><h4>${c.title}</h4><p>${c.text}</p></div>`).join("")
+        );
+      }
+
+      // Plan
+      function renderPlan() {
+        const d = C.plan || {};
+        function sec(name, items) { return items ? `<div><h4>${name}</h4><ul>${L(items)}</ul></div>` : ""; }
+        const grid = `<div class="grid cols-2">
+    ${sec("Phase 1", d.phase1)}${sec("Phase 2", d.phase2)}${sec("Phase 3", d.phase3)}${sec("Responsibilities", d.responsibilities)}
+  </div>`;
+
+        const costs = d.costs || [];
+        const costCards = costs
+          .map((c) => {
+            const maint = c.maintenance ? `<ul class="tight">${L(c.maintenance)}</ul>` : "";
+            const lines = [
+              c.example ? `<div class="kv"><span>Example</span><span>${c.example}</span></div>` : "",
+              c.basePrice ? `<div class="kv"><span>Base Price</span><span>${c.basePrice}</span></div>` : "",
+              c.operatingCost ? `<div class="kv"><span>Operating Cost</span><span>${c.operatingCost}</span></div>` : "",
+              c.install ? `<div class="kv"><span>Install</span><span>${c.install}</span></div>` : "",
+              c.shipping ? `<div class="kv"><span>Freight/Shipping</span><span>${c.shipping}</span></div>` : "",
+              maint ? `<div class="kv"><span>Maintenance</span><span>${maint}</span></div>` : "",
+              c.lifespan ? `<div class="kv"><span>Expected Lifespan</span><span>${c.lifespan}</span></div>` : ""
+            ].join("");
+            const est = c.estimate ? `<div class="est">${c.estimate}</div>` : "";
+            return `
+        <div class="card cost-card">
+          <h4>${c.name}</h4>
+          ${lines}
+          ${est}
+        </div>`;
+          })
+          .join("");
+
+        return `${H("Implementation Plan")}${grid}${costCards
+            ? `
+      <h3 class="sol-sub" style="margin-top:18px">Costs (Estimation)</h3>
+      <div class="cost-grid">
+        ${costCards}
+      </div>`
+            : ""
+          }`;
+      }
+
+      // Recommendations
+      function renderRecs() {
+        return `${H("Recommendations")}<ul>${L(C.recommendations || [])}</ul>`;
+      }
+
+      // References
+      function renderReferences() {
+        const d = C.references || {};
+        const title = d.title || "References";
+        const prompt = (d.aiPrompt || "Paste your AI prompt here").trim();
+        const notes = (d.notes || []).map((n) => `<li>${n}</li>`).join("");
+        const links = (d.links || []).map((u) => `<li><a href="${u}" target="_blank" rel="noopener">${u}</a></li>`).join("");
+        const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+        const promptBlock = `<h3>AI Prompt Used</h3><pre id="aiPromptPre" style="white-space: pre-wrap; background:#faf7f2; padding:12px; border-radius:6px;">${prompt ? esc(prompt) : esc("Paste your AI prompt here or add ai-prompt.txt to project root.")}</pre>`;
+        const lists = [
+          notes ? `<div class="card"><h3>Notes</h3><ul>${notes}</ul></div>` : "",
+          links ? `<div class="card"><h3>Links</h3><ul class="tight">${links}</ul></div>` : ""
+        ].filter(Boolean).join("");
+        return `${H(title)}${promptBlock}${lists ? `<div class="grid cols-2" style="margin-top:12px;">${lists}</div>` : ""}`;
+      }
+
+      // Router
+      const ROUTES = {
+        home: renderHome,
+        group: renderGroup,
+        summary: renderSummary,
+        problem: renderProblem,
+        principles: renderPrinciples,
+        solution: renderSolution,
+        journeys: renderJourneys,
+        community: renderCommunity,
+        concerns: renderConcerns,
+        plan: renderPlan,
+        recommendations: renderRecs,
+        references: renderReferences
+      };
+
+      const qs = () => new URLSearchParams(window.location.search);
+      const sections = () => Array.from(document.querySelectorAll("main section"));
+      const showOnly = (id) => {
+        sections().forEach((s) => { s.style.display = s.id === id ? "" : "none"; });
+        window.scrollTo({ top: 0, behavior: "instant" });
+      };
+
+      function renderPage(id) {
+        const fn = ROUTES[id] || ROUTES.home;
+        const map = {
+          home: "homeBody",
+          group: "groupBody",
+          summary: "summaryBody",
+          problem: "problemBody",
+          principles: "principlesBody",
+          solution: "solutionBody",
+          journeys: "journeysBody",
+          community: "communityBody",
+          concerns: "concernsBody",
+          plan: "planBody",
+          recommendations: "recsBody",
+          references: "referencesBody"
+        };
+        const target = document.getElementById(map[id] || "homeBody");
+        if (target) target.innerHTML = fn();
+        initAutoCarousels();
+        if (id === "references") loadReferencesAsync(C.references || {});
+        document.querySelectorAll("nav.tabs a").forEach((a) => {
+          a.classList.toggle("active", a.getAttribute("data-page") === id);
+        });
+        showOnly(id);
+      }
+
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest("a[data-page]");
+        if (!a) return;
+        e.preventDefault();
+        const id = a.getAttribute("data-page");
+        const url = new URL(window.location.href);
+        url.searchParams.set("page", id);
+        history.pushState({ page: id }, "", url);
+        renderPage(id);
+      });
+
+      window.addEventListener("popstate", () => {
+        const p = qs().get("page") || "home";
+        renderPage(p);
+      });
+
+      const start = qs().get("page") || "group"; // start near top as requested
+      renderPage(start);
+
+      // Simple automatic fading carousel
+      function initAutoCarousels() {
+        const carousels = document.querySelectorAll(".auto-carousel");
+        carousels.forEach((root) => {
+          const slides = root.querySelectorAll(".auto-slide");
+          let i = 0;
+          if (slides.length <= 1) return;
+          setInterval(() => {
+            slides[i].classList.remove("active");
+            i = (i + 1) % slides.length;
+            slides[i].classList.add("active");
+          }, 4000); // change every 4s
+        });
+      }
+
+      // Attempt to load prompt text from ai-prompt.txt when not provided in content.js
+      async function loadReferencesAsync(ref) {
+        try {
+          if (ref && ref.aiPrompt && String(ref.aiPrompt).trim()) return;
+          const res = await fetch('ai-prompt.txt', { cache: 'no-store' });
+          if (!res.ok) return;
+          const text = await res.text();
+          const pre = document.getElementById('aiPromptPre');
+          if (pre && text.trim()) pre.textContent = text;
+        } catch (e) {
+          // ignore fetch failures (e.g., file:// restrictions)
+        }
+      }
+    })();
+  </script>
+</body>
+
+</html>
